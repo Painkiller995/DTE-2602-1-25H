@@ -14,17 +14,22 @@ if __name__ == "__main__":
     fps_clock = pygame.time.Clock()
 
     play_surface = pygame.display.set_mode((500, 500))
-    pygame.display.set_caption('Karaktersatt Oppgave 1 DTE2602')
-    simulator_speed = 10 # Adjust this value to change the speed of the visualiztion. Bigger number = more faster...
+    pygame.display.set_caption("Karaktersatt Oppgave 1 DTE2602")
+    simulator_speed = 15  # Adjust this value to change the speed of the visualiztion. Bigger number = more faster...
 
-    bg_image = pygame.image.load("grid.jpg") # Loads the simplified grid image.
-    #bg_image = pygame.image.load("map.jpg") # Uncomment this to load the terrain map image.
+    bg_image = pygame.image.load("grid.jpg")  # Loads the simplified grid image.
+    # bg_image = pygame.image.load("map.jpg") # Uncomment this to load the terrain map image.
 
-    robot = Robot() # Create a new robot.
-    robot.reset_random()
+    robot = Robot()  # Create a new robot.
+    # robot.reset_random()
+    robot.reset_start()
+
+    font = pygame.font.SysFont("Arial", 12)
+    episode_count = 1
 
     # Pygame boilerplate code.
     running = True
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -37,18 +42,31 @@ if __name__ == "__main__":
                     running = False
                     break
 
-        play_surface.fill(WHITE_COLOR) # Fill the screen with white.
-        play_surface.blit(bg_image, (0, 0)) # Render the background image.
+        play_surface.fill(WHITE_COLOR)  # Fill the screen with white.
+        play_surface.blit(bg_image, (0, 0))  # Render the background image.
 
         # Render the robot over the image.
-        pygame.draw.rect(play_surface, BLACK_COLOR, Rect(robot.get_x() * 70 + 69, robot.get_y() * 70 + 69, 22, 22)) # A black outline.
-        pygame.draw.rect(play_surface, GREEN_COLOR, Rect(robot.get_x() * 70 + 70, robot.get_y() * 70 + 70, 20, 20)) # The robot is rendered in green, you may change this if you want.
+        pygame.draw.rect(
+            play_surface,
+            BLACK_COLOR,
+            Rect(robot.get_x() * 70 + 69, robot.get_y() * 70 + 69, 22, 22),
+        )  # A black outline.
+        pygame.draw.rect(
+            play_surface,
+            GREEN_COLOR,
+            Rect(robot.get_x() * 70 + 70, robot.get_y() * 70 + 70, 20, 20),
+        )  # The robot is rendered in green, you may change this if you want.
 
         # Calls related to Q-learning.
         if robot.has_reached_goal():
-            robot.reset_random()
+            # robot.reset_random()
+            robot.reset_start()
+            episode_count += 1
         else:
             robot.one_step_q_learning()
+
+        episode_text = font.render(f"Episode {episode_count}", True, BLACK_COLOR)
+        play_surface.blit(episode_text, (7, 10))
 
         # Refresh the screen.
         pygame.display.flip()

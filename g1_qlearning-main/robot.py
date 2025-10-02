@@ -65,33 +65,51 @@ class Robot:
 
         return self.pos_to_state((new_row, new_col))
 
-    def one_episode_q_learning(self, use_eg=False):
-        self.current_state = self.start_state
-        while not self.has_reached_goal():
-            if use_eg:
-                action = self.select_action_eg(self.current_state)
-            else:
-                action = self.select_action()
+    def one_step_q_learning(self, use_eg=True):
+        if self.current_state is None:
+            self.current_state = self.start_state
 
-            next_state = self.get_next_state(self.current_state, action)
-            reward = self.get_reward(next_state)
+        if self.has_reached_goal():
+            return
 
-            # Q-learning update
-            self.q_matrix[self.current_state][action] = (1 - ALPHA) * self.q_matrix[
-                self.current_state
-            ][action] + ALPHA * (reward + GAMMA * max(self.q_matrix[next_state]))
+        # Choose action
+        if use_eg:
+            action = self.select_action_eg(self.current_state)
+        else:
+            action = self.select_action()
 
-            self.current_state = next_state
+        # Get next state and reward
+        next_state = self.get_next_state(self.current_state, action)
+        reward = self.get_reward(next_state)
+
+        # Q-learning update
+        self.q_matrix[self.current_state][action] = (1 - ALPHA) * self.q_matrix[
+            self.current_state
+        ][action] + ALPHA * (reward + GAMMA * max(self.q_matrix[next_state]))
+
+        # Move to next state
+        self.current_state = next_state
 
     def q_learning(self, epochs, use_eg=False):
         for _ in range(epochs):
-            self.one_episode_q_learning(use_eg=use_eg)
+            self.reset_start()
+            while not self.has_reached_goal():
+                self.one_step_q_learning(use_eg=use_eg)
 
     def has_reached_goal(self):
         return self.current_state == self.goal_state
 
+    def reset_random(self):
+        while True:
+            rand_state = random.randint(0, NUMBER_OF_STATES - 1)
+            if rand_state != self.goal_state:
+                self.current_state = rand_state
+                break
+
+    def reset_start(self):
+        self.current_state = self.start_state
+
     def greedy_path(self):
-        """Return the greedy path following max-Q actions."""
         state = self.start_state
         path = [self.state_to_pos(state)]
         visited = set([state])
@@ -109,6 +127,14 @@ class Robot:
             steps += 1
 
         return path
+
+    def get_x(self):
+        row, col = self.state_to_pos(self.current_state)
+        return col
+
+    def get_y(self):
+        row, col = self.state_to_pos(self.current_state)
+        return row
 
     def print_path(self):
         path = self.greedy_path()
