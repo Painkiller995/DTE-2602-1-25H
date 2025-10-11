@@ -42,6 +42,14 @@ class Robot:
         row, col = pos
         return row * COLS + col
 
+    def get_x(self):
+        _, col = self.state_to_pos(self.current_state)
+        return col
+
+    def get_y(self):
+        row, _ = self.state_to_pos(self.current_state)
+        return row
+
     def select_action(self):
         return random.randint(0, NUMBER_OF_ACTIONS - 1)
 
@@ -50,10 +58,6 @@ class Robot:
             return self.select_action()
         else:
             return np.argmax(self.q_matrix[state])
-
-    def get_reward(self, state):
-        row, col = self.state_to_pos(state)
-        return REWARDS[row][col]
 
     def get_next_state(self, state, action):
         row, col = self.state_to_pos(state)
@@ -64,6 +68,13 @@ class Robot:
         new_col = max(0, min(COLS - 1, col + d_col))
 
         return self.pos_to_state((new_row, new_col))
+
+    def get_reward(self, state):
+        row, col = self.state_to_pos(state)
+        return REWARDS[row][col]
+
+    def has_reached_goal(self):
+        return self.current_state == self.goal_state
 
     def one_step_q_learning(self, use_eg=True):
         if self.current_state is None:
@@ -96,8 +107,8 @@ class Robot:
             while not self.has_reached_goal():
                 self.one_step_q_learning(use_eg=use_eg)
 
-    def has_reached_goal(self):
-        return self.current_state == self.goal_state
+    def reset_start(self):
+        self.current_state = self.start_state
 
     def reset_random(self):
         while True:
@@ -106,15 +117,13 @@ class Robot:
                 self.current_state = rand_state
                 break
 
-    def reset_start(self):
-        self.current_state = self.start_state
-
     def greedy_path(self):
         state = self.start_state
         path = [self.state_to_pos(state)]
         visited = set([state])
         steps = 0
         while state != self.goal_state and steps < 200:
+            # Velger handlingen med høyest Q-verdi i gjeldende tilstand (beste lærte handling)
             action = np.argmax(self.q_matrix[state])
             next_state = self.get_next_state(state, action)
 
@@ -127,14 +136,6 @@ class Robot:
             steps += 1
 
         return path
-
-    def get_x(self):
-        row, col = self.state_to_pos(self.current_state)
-        return col
-
-    def get_y(self):
-        row, col = self.state_to_pos(self.current_state)
-        return row
 
     def print_path(self):
         path = self.greedy_path()
