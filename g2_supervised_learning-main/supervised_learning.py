@@ -22,6 +22,30 @@ from numpy.typing import NDArray
 #   Data input / prediction evaluation
 #########################################
 
+FILE_NAME = "palmer_penguins.csv"
+SPECIES_MAPPING = {"Adelie": 0, "Chinstrap": 1, "Gentoo": 2}
+
+
+def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
+    """Read CSV file and return data as list of lists of strings
+
+    Parameters
+    ----------
+    file_name: str
+        Path to CSV file
+
+    Returns
+    -------
+    data: list[list[str]]
+        Data read from CSV file, as list of lists of strings
+    """
+    with open(file_name, mode="r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        if skip_header:
+            next(reader)  # Skip header row
+        data = [row for row in reader]
+    return data
+
 
 def read_data() -> tuple[NDArray, NDArray]:
     """Read data from CSV file, remove rows with missing data, and normalize
@@ -43,7 +67,27 @@ def read_data() -> tuple[NDArray, NDArray]:
     -----
     Z-score normalization: https://en.wikipedia.org/wiki/Standard_score .
     """
-    pass
+    raw_csv_rows = read_csv_file(FILE_NAME)
+    # Remove rows with missing data ("NA") in any column
+    valid_rows = [row for row in raw_csv_rows if "NA" not in row]
+
+    data = np.array(valid_rows)
+
+    # Select only the numeric columns (columns 2 to 5)
+    data_numeric = data[:, 2:6].astype(float)
+    data_mean = np.mean(data_numeric, axis=0)
+    data_std = np.std(data_numeric, axis=0)
+    data_normalized = (data_numeric - data_mean) / data_std
+
+    # Convert species strings to integer values
+    species_unique = np.unique(data[:, 0])
+
+    species_to_int = {species: SPECIES_MAPPING[species] for species in species_unique}
+
+    X = data_normalized
+    y = np.array([species_to_int[species] for species in data[:, 0]])
+
+    return X, y
 
 
 def convert_y_to_binary(y: NDArray, y_value_true: int) -> NDArray:
@@ -376,7 +420,10 @@ class DecisionTree:
 ############
 
 if __name__ == "__main__":
-    pass
     # Demonstrate your code / solutions here.
     # Be tidy; don't cut-and-paste lots of lines.
     # Experiments can be implemented as separate functions that are called here.
+    X, y = read_data()
+
+    print(X)
+    print(y)
