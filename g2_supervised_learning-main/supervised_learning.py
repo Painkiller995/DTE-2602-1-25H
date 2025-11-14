@@ -77,14 +77,16 @@ def read_data() -> tuple[NDArray, NDArray]:
     data_numeric = data[:, 2:6].astype(float)
     data_mean = np.mean(data_numeric, axis=0)
     data_std = np.std(data_numeric, axis=0)
-    data_normalized = (data_numeric - data_mean) / data_std
+    X = (data_numeric - data_mean) / data_std
 
+    # ----------------------------------------------------------
     # Convert species strings to integer values
     species_unique = np.unique(data[:, 0])
+    if set(species_unique) != set(SPECIES_MAPPING.keys()):
+        raise ValueError("Unexpected species in dataset")
+    # ----------------------------------------------------------
 
     species_to_int = {species: SPECIES_MAPPING[species] for species in species_unique}
-
-    X = data_normalized
     y = np.array([species_to_int[species] for species in data[:, 0]])
 
     return X, y
