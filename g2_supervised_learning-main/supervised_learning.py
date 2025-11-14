@@ -107,7 +107,7 @@ def convert_y_to_binary(y: NDArray, y_value_true: int) -> NDArray:
         Binary vector, shape (n_samples,)
         1 for values in y that are equal to y_value_true, 0 otherwise
     """
-    pass
+    return (y == y_value_true).astype(int)
 
 
 def train_test_split(
@@ -424,6 +424,8 @@ if __name__ == "__main__":
     # Be tidy; don't cut-and-paste lots of lines.
     # Experiments can be implemented as separate functions that are called here.
     X, y = read_data()
-
     print(X)
     print(y)
+    # Test convert_y_to_binary
+    y_binary = convert_y_to_binary(y, y_value_true=0)
+    print(y_binary)
