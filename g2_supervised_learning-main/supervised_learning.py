@@ -24,6 +24,7 @@ from numpy.typing import NDArray
 
 FILE_NAME = "palmer_penguins.csv"
 SPECIES_MAPPING = {"Adelie": 0, "Chinstrap": 1, "Gentoo": 2}
+# For Visualization purposes
 NUMERIC_FEATURES = {"bill_length_mm": 2, "bill_depth_mm": 3, "flipper_length_mm": 4, "body_mass_g": 5}
 
 
