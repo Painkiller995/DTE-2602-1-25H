@@ -306,7 +306,7 @@ def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]
 
     _, n_features = X.shape
 
-    impurity_reduction: float = 0.0
+    impurity_reduction: float = -np.inf  # Start with very low value
     best_feature_index: int = -1  # -1 indicates no feature found yet
     best_feature_value: float = np.nan  # NaN indicates no value found yet
 
