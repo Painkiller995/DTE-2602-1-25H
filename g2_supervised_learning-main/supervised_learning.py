@@ -23,9 +23,21 @@ from numpy.typing import NDArray
 #########################################
 
 FILE_NAME = "palmer_penguins.csv"
-SPECIES_MAPPING = {"Adelie": 0, "Chinstrap": 1, "Gentoo": 2}
-# For Visualization purposes
-NUMERIC_FEATURES = {"bill_length_mm": 2, "bill_depth_mm": 3, "flipper_length_mm": 4, "body_mass_g": 5}
+
+SPECIES_MAPPING = {
+    "Adelie": 0,
+    "Chinstrap": 1,
+    "Gentoo": 2,
+}
+
+NUMERIC_FEATURES = {
+    "bill_length_mm": 2,
+    "bill_depth_mm": 3,
+    "flipper_length_mm": 4,
+    "body_mass_g": 5,
+}
+
+NUMERIC_INDICES = list(NUMERIC_FEATURES.values())
 
 
 def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
@@ -72,13 +84,14 @@ def read_data() -> tuple[NDArray, NDArray]:
     Z-score normalization: https://en.wikipedia.org/wiki/Standard_score .
     """
     raw_csv_rows = read_csv_file(FILE_NAME)
+
     # Remove rows with missing data ("NA") in any column
     valid_rows = [row for row in raw_csv_rows if "NA" not in row]
 
     data = np.array(valid_rows)
 
-    # Select only the numeric columns (columns 2 to 5)
-    data_numeric = data[:, 2:6].astype(float)
+    data_numeric = data[:, NUMERIC_INDICES].astype(float)
+    print(data_numeric)
     data_mean = np.mean(data_numeric, axis=0)
     data_std = np.std(data_numeric, axis=0)
     X = (data_numeric - data_mean) / data_std
