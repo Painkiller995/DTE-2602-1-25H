@@ -584,6 +584,45 @@ class DecisionTree:
 
         return y_pred
 
+    def str_with_titles(self) -> str:
+        """Return the original tree string, but replace species numbers with names and
+        feature indices with readable names.
+        """
+        FEATURE_NAMES = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
+        SPECIES_NAMES = {v: k for k, v in SPECIES_MAPPING.items()}
+
+        def replace_values(node):
+            if isinstance(node, DecisionTreeLeafNode):
+                original = node.value
+                node.value = SPECIES_NAMES.get(node.y_value, str(node.y_value))
+                return original  # return original value for restoring
+            elif isinstance(node, DecisionTreeBranchNode):
+                original = node.value
+                # Replace "f0 <= 5.1" style with feature name
+                node.value = f"{FEATURE_NAMES[node.feature_index]} <= {node.feature_value:.2f}"
+                # Recursively replace left and right
+                left_orig = replace_values(node.left) if node.left else None
+                right_orig = replace_values(node.right) if node.right else None
+                return (original, left_orig, right_orig)
+            return None
+
+        def restore_values(node, originals):
+            if isinstance(node, DecisionTreeLeafNode):
+                node.value = originals
+            elif isinstance(node, DecisionTreeBranchNode):
+                node.value, left_orig, right_orig = originals
+                if node.left:
+                    restore_values(node.left, left_orig)
+                if node.right:
+                    restore_values(node.right, right_orig)
+
+        # Replace values for display
+        originals = replace_values(self._root)
+        tree_str = str(self._root)
+        # Restore original tree values
+        restore_values(self._root, originals)
+        return tree_str
+
 
 ############
 #   MAIN
@@ -628,3 +667,9 @@ if __name__ == "__main__":
     print("Decision Tree (3-class classification)")
     print(f"  Train Accuracy: {accuracy(y_pred_train_tree, y_train):.3f}")
     print(f"  Test Accuracy: {accuracy(y_pred_test_tree, y_test):.3f}")
+
+    print("Decision Tree structure:")
+    print(tree)
+
+    print("Decision Tree structure (with feature and species names):")
+    print(tree.str_with_titles())
