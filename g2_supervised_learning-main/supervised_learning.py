@@ -315,7 +315,7 @@ def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]
         for value in feature_values:
             left_mask = X[:, feature_index] <= value
             reduction = gini_impurity_reduction(y, left_mask)
-            # Update best split if we found a better one
+            # Update best split if a better impurity reduction is found
             if reduction > impurity_reduction:
                 impurity_reduction = reduction
                 best_feature_index = feature_index
