@@ -256,7 +256,7 @@ def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
 
     """
     # Total impurity before split
-    impurity_whole = gini_impurity(y)
+    impurity_before = gini_impurity(y)
 
     y_left = y[left_mask]
     y_right = y[~left_mask]
@@ -271,7 +271,7 @@ def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
     impurity_after = (n_left / n) * impurity_left + (n_right / n) * impurity_right
 
     # Reduction = impurity_before - impurity_after
-    return impurity_whole - impurity_after
+    return impurity_before - impurity_after
 
 
 def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]:
