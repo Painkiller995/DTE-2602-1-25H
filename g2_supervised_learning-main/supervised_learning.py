@@ -306,22 +306,22 @@ def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]
 
     _, n_features = X.shape
 
-    best_reduction: float = 0.0
-    best_feature: int = -1
-    best_value: float = np.nan  # NaN indicates no value found yet
+    impurity_reduction: float = 0.0
+    best_feature_index: int = -1  # -1 indicates no feature found yet
+    best_feature_value: float = np.nan  # NaN indicates no value found yet
 
-    for feature_idx in range(n_features):
-        feature_values = np.unique(X[:, feature_idx])
+    for feature_index in range(n_features):
+        feature_values = np.unique(X[:, feature_index])
         for value in feature_values:
-            left_mask = X[:, feature_idx] <= value
+            left_mask = X[:, feature_index] <= value
             reduction = gini_impurity_reduction(y, left_mask)
             # Update best split if we found a better one
-            if reduction > best_reduction:
-                best_reduction = reduction
-                best_feature = feature_idx
-                best_value = value
+            if reduction > impurity_reduction:
+                impurity_reduction = reduction
+                best_feature_index = feature_index
+                best_feature_value = value
 
-    return best_reduction, best_feature, best_value
+    return impurity_reduction, best_feature_index, best_feature_value
 
 
 ###################
