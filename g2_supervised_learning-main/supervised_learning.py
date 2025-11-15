@@ -24,6 +24,7 @@ from numpy.typing import NDArray
 
 FILE_NAME = "palmer_penguins.csv"
 
+SPECIES_COL_INDEX = 0
 SPECIES_MAPPING = {
     "Adelie": 0,
     "Chinstrap": 1,
@@ -90,21 +91,22 @@ def read_data() -> tuple[NDArray, NDArray]:
 
     data = np.array(valid_rows)
 
+    # ----------------------------------------------------------
+    # X matrix: extract numeric columns and normalize (z-score)
     data_numeric = data[:, NUMERIC_INDICES].astype(float)
-    print(data_numeric)
     data_mean = np.mean(data_numeric, axis=0)
     data_std = np.std(data_numeric, axis=0)
     X = (data_numeric - data_mean) / data_std
 
     # ----------------------------------------------------------
-    # Convert species strings to integer values
-    species_unique = np.unique(data[:, 0])
+    # y vector: Based on species column, map species names to integers using SPECIES_MAPPING
+    species_unique = np.unique(data[:, SPECIES_COL_INDEX])
+
     if set(species_unique) != set(SPECIES_MAPPING.keys()):
         raise ValueError("Unexpected species in dataset")
-    # ----------------------------------------------------------
 
     species_to_int = {species: SPECIES_MAPPING[species] for species in species_unique}
-    y = np.array([species_to_int[species] for species in data[:, 0]])
+    y = np.array([species_to_int[species] for species in data[:, SPECIES_COL_INDEX]])
 
     return X, y
 
