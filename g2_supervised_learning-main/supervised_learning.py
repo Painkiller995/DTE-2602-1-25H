@@ -570,35 +570,7 @@ class DecisionTree:
                 "stitch" predictions for left and right datasets into single y vector
                 return y vector (length matching number of rows in X)
         """
-
-        if node is None:
-            raise ValueError("Node is None")
-
-        # If node is a leaf node: return vector with leaf value
-        if isinstance(node, DecisionTreeLeafNode):
-            return np.full(X.shape[0], node.y_value, dtype=int)
-
-        # Then, it's a branch node: split the data
-        left_mask = X[:, node.feature_index] <= node.feature_value
-        right_mask = ~left_mask
-
-        # Initialize output array
-        y_pred = np.empty(X.shape[0], dtype=int)
-
-        if not node.left or not node.right:
-            raise ValueError("Branch node missing left or right child")
-
-        # Predict for left subset
-        node_left = cast(Union[DecisionTreeBranchNode, DecisionTreeLeafNode], node.left)
-        if np.any(left_mask):
-            y_pred[left_mask] = self._predict(X[left_mask], node_left)
-
-        # Predict for right subset
-        node_right = cast(Union[DecisionTreeBranchNode, DecisionTreeLeafNode], node.right)
-        if np.any(right_mask):
-            y_pred[right_mask] = self._predict(X[right_mask], node_right)
-
-        return y_pred
+        pass
 
 
 ############
@@ -609,41 +581,17 @@ if __name__ == "__main__":
     # --------------------------------------------
     # Load and prepare dataset
     X, y = read_data()
+    print("-" * 40)
     print(f"Dataset shape: {X.shape}, Labels shape: {y.shape}")
 
     # --------------------------------------------
     # Split into training and test sets
     (X_train, y_train), (X_test, y_test) = train_test_split(X, y, train_frac=0.7)
     print(f"Training samples: {X_train.shape[0]}, Test samples: {X_test.shape[0]}")
-
-    # --------------------------------------------
-    # Perceptron (binary classification)
-    # We'll convert the problem to binary: e.g., Gentoo (2) vs not Gentoo
-    y_train_bin = convert_y_to_binary(y_train, y_value_true=2)
-    y_test_bin = convert_y_to_binary(y_test, y_value_true=2)
-
-    perceptron = Perceptron()
-    perceptron.train(X_train, y_train_bin, learning_rate=0.1, max_epochs=10000)
-
-    y_pred_train = perceptron.predict(X_train)
-    y_pred_test = perceptron.predict(X_test)
-
-    print("Perceptron (Gentoo vs not Gentoo)")
-    print(f"  Converged: {perceptron.converged}")
-    print(f"  Train Accuracy: {accuracy(y_pred_train, y_train_bin)}")
-    print(f"  Test Accuracy: {accuracy(y_pred_test, y_test_bin)}")
+    print("-" * 40)
 
     # Decision Tree
     # --------------------------------------------
-    tree = DecisionTree()
-    tree.fit(X_train, y_train)
-
-    y_pred_train_tree = tree.predict(X_train)
-    y_pred_test_tree = tree.predict(X_test)
-
-    print("Decision Tree (3-class classification)")
-    print(f"  Train Accuracy: {accuracy(y_pred_train_tree, y_train):.3f}")
-    print(f"  Test Accuracy: {accuracy(y_pred_test_tree, y_test):.3f}")
-
-    print("Decision Tree structure:")
-    print(tree)
+    decision_tree = DecisionTree()
+    decision_tree.fit(X_train, y_train)
+    print(decision_tree)
