@@ -175,7 +175,8 @@ def accuracy(y_pred: NDArray, y_true: NDArray) -> float:
     # Notes:
     See https://en.wikipedia.org/wiki/Accuracy_and_precision#In_classification
     """
-    pass
+    correct_count = np.sum(y_pred == y_true)
+    return correct_count / len(y_true)
 
 
 ##############################
@@ -199,7 +200,16 @@ def gini_impurity(y: NDArray) -> float:
     # Notes:
     - Wikipedia ref.: https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity
     """
-    pass
+
+    if len(y) == 0:
+        return 0.0
+
+    _, counts = np.unique(y, return_counts=True)
+
+    p = counts / len(y)
+
+    # 1 - sum(p_i^2)
+    return 1 - np.sum(p**2)
 
 
 def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
@@ -221,7 +231,23 @@ def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
         for the two split datasets ("left" and "right").
 
     """
-    pass
+    # Total impurity before split
+    impurity = gini_impurity(y)
+
+    y_left = y[left_mask]
+    y_right = y[~left_mask]
+
+    # Sizes of each group
+    n = len(y)
+    n_left = len(y_left)
+    n_right = len(y_right)
+
+    impurity_left = gini_impurity(y_left)
+    impurity_right = gini_impurity(y_right)
+    impurity_after = (n_left / n) * impurity_left + (n_right / n) * impurity_right
+
+    # Reduction = impurity_before - impurity_after
+    return impurity - impurity_after
 
 
 def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]:
