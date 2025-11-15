@@ -232,7 +232,6 @@ def gini_impurity(y: NDArray) -> float:
 
     p = counts / len(y)
 
-    # 1 - sum(p_i^2)
     return 1 - np.sum(p**2)
 
 
@@ -670,8 +669,8 @@ if __name__ == "__main__":
 
     print("Perceptron (Gentoo vs not Gentoo)")
     print(f"  Converged: {perceptron.converged}")
-    print(f"  Train Accuracy: {accuracy(y_pred_train, y_train_bin):.3f}")
-    print(f"  Test Accuracy: {accuracy(y_pred_test, y_test_bin):.3f}")
+    print(f"  Train Accuracy: {accuracy(y_pred_train, y_train_bin)}")
+    print(f"  Test Accuracy: {accuracy(y_pred_test, y_test_bin)}")
 
     # Decision Tree
     # --------------------------------------------
