@@ -156,12 +156,14 @@ def train_test_split(
     """
 
     # Number of samples
-    n_samples = X.shape[0]
+    n_samples, _ = X.shape
+    print(f"Total samples: {n_samples}")
 
+    # Generate shuffled array of indices
     indices = np.arange(n_samples)
-
-    # Shuffle data
     np.random.shuffle(indices)
+
+    # Shuffle data using the shuffled indices
     X_shuffled = X[indices]
     y_shuffled = y[indices]
 
