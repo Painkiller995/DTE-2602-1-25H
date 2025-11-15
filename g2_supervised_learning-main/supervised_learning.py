@@ -24,7 +24,7 @@ from numpy.typing import NDArray
 
 FILE_NAME = "palmer_penguins.csv"
 SPECIES_MAPPING = {"Adelie": 0, "Chinstrap": 1, "Gentoo": 2}
-FEATURE_NAMES = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
+NUMERIC_FEATURES = {"bill_length_mm": 2, "bill_depth_mm": 3, "flipper_length_mm": 4, "body_mass_g": 5}
 
 
 def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
