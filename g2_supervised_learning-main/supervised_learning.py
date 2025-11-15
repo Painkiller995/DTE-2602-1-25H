@@ -581,14 +581,14 @@ if __name__ == "__main__":
     # --------------------------------------------
     # Load and prepare dataset
     X, y = read_data()
-    print("-" * 40)
+    print("-" * 75)
     print(f"Dataset shape: {X.shape}, Labels shape: {y.shape}")
 
     # --------------------------------------------
     # Split into training and test sets
     (X_train, y_train), (X_test, y_test) = train_test_split(X, y, train_frac=0.7)
     print(f"Training samples: {X_train.shape[0]}, Test samples: {X_test.shape[0]}")
-    print("-" * 40)
+    print("-" * 75)
 
     # Decision Tree
     # --------------------------------------------
