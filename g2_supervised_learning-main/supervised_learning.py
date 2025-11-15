@@ -133,7 +133,27 @@ def train_test_split(
     (X_test,y_test): tuple[NDArray, NDArray]]
         Test dataset
     """
-    pass
+
+    # Number of samples
+    n_samples = X.shape[0]
+
+    indices = np.arange(n_samples)
+
+    # Shuffle data
+    np.random.shuffle(indices)
+    X_shuffled = X[indices]
+    y_shuffled = y[indices]
+
+    #  Find split index
+    split_index = int(train_frac * n_samples)
+
+    X_train = X_shuffled[:split_index]
+    y_train = y_shuffled[:split_index]
+
+    X_test = X_shuffled[split_index:]
+    y_test = y_shuffled[split_index:]
+
+    return (X_train, y_train), (X_test, y_test)
 
 
 def accuracy(y_pred: NDArray, y_true: NDArray) -> float:
@@ -426,8 +446,12 @@ if __name__ == "__main__":
     # Be tidy; don't cut-and-paste lots of lines.
     # Experiments can be implemented as separate functions that are called here.
     X, y = read_data()
-    print(X)
-    print(y)
+    # print(X)
+    # print(y)
     # Test convert_y_to_binary
     y_binary = convert_y_to_binary(y, y_value_true=0)
-    print(y_binary)
+    # print(y_binary)
+    # Test train_test_split
+    (X_train, y_train), (X_test, y_test) = train_test_split(X, y, train_frac=0.8)
+    print("Train X shape:", X_train)
+    print("Test X shape:", X_test)
