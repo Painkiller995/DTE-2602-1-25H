@@ -1,6 +1,6 @@
 import csv
 import random as rnd
-from typing import Union
+from typing import Union, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,10 +24,12 @@ from numpy.typing import NDArray
 
 FILE_NAME = "palmer_penguins.csv"
 SPECIES_MAPPING = {"Adelie": 0, "Chinstrap": 1, "Gentoo": 2}
+FEATURE_NAMES = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
 
 
 def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
-    """Read CSV file and return data as list of lists of strings
+    """
+    Read CSV file and return data as list of lists of strings
 
     Parameters
     ----------
@@ -48,7 +50,8 @@ def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
 
 
 def read_data() -> tuple[NDArray, NDArray]:
-    """Read data from CSV file, remove rows with missing data, and normalize
+    """
+    Read data from CSV file, remove rows with missing data, and normalize
 
     Returns
     -------
@@ -93,7 +96,8 @@ def read_data() -> tuple[NDArray, NDArray]:
 
 
 def convert_y_to_binary(y: NDArray, y_value_true: int) -> NDArray:
-    """Convert integer valued y to binary (0 or 1) valued vector
+    """
+    Convert integer valued y to binary (0 or 1) valued vector
 
     Parameters
     ----------
@@ -115,7 +119,8 @@ def convert_y_to_binary(y: NDArray, y_value_true: int) -> NDArray:
 def train_test_split(
     X: NDArray, y: NDArray, train_frac: float
 ) -> tuple[tuple[NDArray, NDArray], tuple[NDArray, NDArray]]:
-    """Shuffle and split dataset into training and testing datasets
+    """
+    Shuffle and split dataset into training and testing datasets
 
     Parameters
     ----------
@@ -157,7 +162,8 @@ def train_test_split(
 
 
 def accuracy(y_pred: NDArray, y_true: NDArray) -> float:
-    """Calculate accuracy of model based on predicted and true values
+    """
+    Calculate accuracy of model based on predicted and true values
 
     Parameters
     ----------
@@ -185,7 +191,8 @@ def accuracy(y_pred: NDArray, y_true: NDArray) -> float:
 
 
 def gini_impurity(y: NDArray) -> float:
-    """Calculate Gini impurity of a vector
+    """
+    Calculate Gini impurity of a vector
 
     Parameters
     ----------
@@ -213,7 +220,8 @@ def gini_impurity(y: NDArray) -> float:
 
 
 def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
-    """Calculate the reduction in mean impurity from a binary split
+    """
+    Calculate the reduction in mean impurity from a binary split
 
     Parameters
     ----------
@@ -251,7 +259,8 @@ def gini_impurity_reduction(y: NDArray, left_mask: NDArray) -> float:
 
 
 def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]:
-    """Find feature and value "split" that yields highest impurity reduction
+    """
+    Find feature and value "split" that yields highest impurity reduction
 
     Parameters
     ----------
@@ -278,7 +287,25 @@ def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]
     The method checks every possible combination of feature and
     existing unique feature values in the dataset.
     """
-    pass
+
+    _, n_features = X.shape
+
+    best_reduction: float = 0.0
+    best_feature: int = -1
+    best_value: float = np.nan  # NaN indicates no value found yet
+
+    for feature_idx in range(n_features):
+        feature_values = np.unique(X[:, feature_idx])
+        for value in feature_values:
+            left_mask = X[:, feature_idx] <= value
+            reduction = gini_impurity_reduction(y, left_mask)
+            # Update best split if we found a better one
+            if reduction > best_reduction:
+                best_reduction = reduction
+                best_feature = feature_idx
+                best_value = value
+
+    return best_reduction, best_feature, best_value
 
 
 ###################
@@ -287,7 +314,8 @@ def best_split_feature_value(X: NDArray, y: NDArray) -> tuple[float, int, float]
 
 
 class Perceptron:
-    """Perceptron model for classifying two classes
+    """
+    Perceptron model for classifying two classes
 
     Attributes
     ----------
@@ -302,31 +330,97 @@ class Perceptron:
 
     def __init__(self):
         """Initialize perceptron"""
-        pass
+        self.weights: NDArray = np.array([])
+        self.bias: float = 0.0
+        self.converged: bool | None = None
 
     def predict_single(self, x: NDArray) -> int:
-        """Predict / calculate perceptron output for single observation / row x
-        <Write rest of docstring here>
         """
-        pass
+        Predict / calculate perceptron output for single observation / row x
+
+        Parameters
+        ----------
+        X: NDArray
+            NumPy feature vector, shape (n_features,)
+
+        Returns
+        -------
+        output: int
+            Perceptron output (0 or 1)
+        """
+        return int(np.dot(self.weights, x) + self.bias > 0)
 
     def predict(self, X: NDArray) -> NDArray:
-        """Predict / calculate perceptron output for data matrix X
-        <Write rest of docstring here>
         """
-        pass
+        Predict / calculate perceptron output for data matrix X
+
+        Parameters
+        ----------
+        X: NDArray
+            NumPy feature matrix, shape (n_samples, n_features)
+
+        Returns
+        -------
+        outputs: NDArray
+            Perceptron outputs (0 or 1) for each row in X, shape (n_samples,)
+        """
+        return np.array([self.predict_single(x) for x in X])
 
     def train(self, X: NDArray, y: NDArray, learning_rate: float, max_epochs: int):
-        """Fit perceptron to training data X with binary labels y
-        <Write rest of docstring here>
         """
-        pass
+        Fit perceptron to training data X with binary labels y
+
+        Parameters
+        ----------
+        X: NDArray
+            NumPy feature matrix, shape (n_samples, n_features)
+        y: NDArray
+            NumPy binary class label vector, shape (n_samples,)
+        learning_rate: float
+            Learning rate for weight updates
+        max_epochs: int
+            Maximum number of training epochs
+        """
+
+        n_samples, n_features = X.shape
+        self.weights = np.zeros(n_features)
+        self.bias = 0.0
+        self.converged = None
+
+        for epoch in range(max_epochs):
+            errors = 0
+            for xi, yi in zip(X, y):
+                prediction = self.predict_single(xi)
+                update = learning_rate * (yi - prediction)
+                if update != 0:
+                    self.weights += update * xi
+                    self.bias += update
+                    errors += 1
+            if errors == 0:
+                self.converged = True
+                break  # stop training early if converged
+        else:
+            self.converged = False
 
     def decision_boundary_slope_intercept(self) -> tuple[float, float]:
         """Calculate slope and intercept for decision boundary line (2-feature data only)
-        <Write rest of docstring here>
+        Calculate slope and intercept for decision boundary line (2-feature data only)
+
+        Returns
+        -------
+        slope: float
+            Slope of the decision boundary line
+        intercept: float
+            Intercept of the decision boundary line
         """
-        pass
+        if len(self.weights) != 2:
+            raise ValueError("Only 2 features supported")
+
+        if self.weights[1] == 0:
+            raise ValueError("Cannot calculate slope when weight[1] is zero")
+        slope = -self.weights[0] / self.weights[1]
+        intercept = -self.bias / self.weights[1]
+        return slope, intercept
 
 
 ####################
@@ -392,9 +486,7 @@ class DecisionTree:
 
         """
         # Find best binary split of dataset
-        impurity_reduction, feature_index, feature_value = best_split_feature_value(
-            X, y
-        )
+        impurity_reduction, feature_index, feature_value = best_split_feature_value(X, y)
 
         # If impurity can't be reduced further, create and return leaf node
         if impurity_reduction == 0:
@@ -428,7 +520,9 @@ class DecisionTree:
             raise ValueError("Decision tree root is None (not set)")
 
     def _predict(
-        self, X: NDArray, node: Union["DecisionTreeBranchNode", "DecisionTreeLeafNode"]
+        self,
+        X: NDArray,
+        node: Union["DecisionTreeBranchNode", "DecisionTreeLeafNode"],
     ) -> NDArray:
         """Predict class (y vector) for feature matrix X
 
@@ -460,7 +554,35 @@ class DecisionTree:
                 "stitch" predictions for left and right datasets into single y vector
                 return y vector (length matching number of rows in X)
         """
-        pass
+
+        if node is None:
+            raise ValueError("Node is None")
+
+        # If node is a leaf node: return vector with leaf value
+        if isinstance(node, DecisionTreeLeafNode):
+            return np.full(X.shape[0], node.y_value, dtype=int)
+
+        # Then, it's a branch node: split the data
+        left_mask = X[:, node.feature_index] <= node.feature_value
+        right_mask = ~left_mask
+
+        # Initialize output array
+        y_pred = np.empty(X.shape[0], dtype=int)
+
+        if not node.left or not node.right:
+            raise ValueError("Branch node missing left or right child")
+
+        # Predict for left subset
+        node_left = cast(Union[DecisionTreeBranchNode, DecisionTreeLeafNode], node.left)
+        if np.any(left_mask):
+            y_pred[left_mask] = self._predict(X[left_mask], node_left)
+
+        # Predict for right subset
+        node_right = cast(Union[DecisionTreeBranchNode, DecisionTreeLeafNode], node.right)
+        if np.any(right_mask):
+            y_pred[right_mask] = self._predict(X[right_mask], node_right)
+
+        return y_pred
 
 
 ############
@@ -468,16 +590,41 @@ class DecisionTree:
 ############
 
 if __name__ == "__main__":
-    # Demonstrate your code / solutions here.
-    # Be tidy; don't cut-and-paste lots of lines.
-    # Experiments can be implemented as separate functions that are called here.
+    # --------------------------------------------
+    # Load and prepare dataset
     X, y = read_data()
-    # print(X)
-    # print(y)
-    # Test convert_y_to_binary
-    y_binary = convert_y_to_binary(y, y_value_true=0)
-    # print(y_binary)
-    # Test train_test_split
-    (X_train, y_train), (X_test, y_test) = train_test_split(X, y, train_frac=0.8)
-    print("Train X shape:", X_train)
-    print("Test X shape:", X_test)
+    print(f"Dataset shape: {X.shape}, Labels shape: {y.shape}")
+
+    # --------------------------------------------
+    # Split into training and test sets
+    (X_train, y_train), (X_test, y_test) = train_test_split(X, y, train_frac=0.7)
+    print(f"Training samples: {X_train.shape[0]}, Test samples: {X_test.shape[0]}")
+
+    # --------------------------------------------
+    # Perceptron (binary classification)
+    # We'll convert the problem to binary: e.g., Gentoo (2) vs not Gentoo
+    y_train_bin = convert_y_to_binary(y_train, y_value_true=2)
+    y_test_bin = convert_y_to_binary(y_test, y_value_true=2)
+
+    perceptron = Perceptron()
+    perceptron.train(X_train, y_train_bin, learning_rate=0.1, max_epochs=10000)
+
+    y_pred_train = perceptron.predict(X_train)
+    y_pred_test = perceptron.predict(X_test)
+
+    print("Perceptron (Gentoo vs not Gentoo)")
+    print(f"  Converged: {perceptron.converged}")
+    print(f"  Train Accuracy: {accuracy(y_pred_train, y_train_bin):.3f}")
+    print(f"  Test Accuracy: {accuracy(y_pred_test, y_test_bin):.3f}")
+
+    # Decision Tree
+    # --------------------------------------------
+    tree = DecisionTree()
+    tree.fit(X_train, y_train)
+
+    y_pred_train_tree = tree.predict(X_train)
+    y_pred_test_tree = tree.predict(X_test)
+
+    print("Decision Tree (3-class classification)")
+    print(f"  Train Accuracy: {accuracy(y_pred_train_tree, y_train):.3f}")
+    print(f"  Test Accuracy: {accuracy(y_pred_test_tree, y_test):.3f}")
