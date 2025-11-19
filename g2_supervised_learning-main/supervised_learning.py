@@ -442,8 +442,12 @@ class Perceptron:
         if self.weights[1] == 0:
             raise ValueError("Cannot calculate slope when weight[1] is zero")
 
+        # How steep the line is
         slope = -self.weights[0] / self.weights[1]
+
+        # Where the line crosses the y-axis (x=0)
         intercept = -self.bias / self.weights[1]
+
         return slope, intercept
 
 
