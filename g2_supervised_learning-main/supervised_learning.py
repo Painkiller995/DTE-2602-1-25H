@@ -606,7 +606,17 @@ class DecisionTree:
                 "stitch" predictions for left and right datasets into single y vector
                 return y vector (length matching number of rows in X)
         """
-        pass
+
+        if isinstance(node, DecisionTreeLeafNode):
+            return np.full(X.shape[0], node.value)
+        else:
+            left_mask = X[:, node.feature_index] <= node.feature_value
+            y_pred = np.empty(X.shape[0], dtype=int)
+
+            y_pred[left_mask] = self._predict(X[left_mask], cast(DecisionTreeBranchNode, node.left))
+            y_pred[~left_mask] = self._predict(X[~left_mask], cast(DecisionTreeBranchNode, node.right))
+
+            return y_pred
 
 
 ############
