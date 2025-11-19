@@ -427,7 +427,7 @@ class Perceptron:
         else:
             self.converged = False  # Did not converge within max_epochs
 
-    def decision_boundary_slope_intercept(self) -> tuple[float, float]:
+    def decision_boundary_slope_intercept(self, feature_indices: tuple[int, int] = (0, 1)) -> tuple[float, float]:
         """
         Calculate slope and intercept for decision boundary line (2-feature data only)
 
@@ -439,16 +439,44 @@ class Perceptron:
             Intercept of the decision boundary line
         """
 
-        if self.weights[1] == 0:
+        if self.weights[feature_indices[1]] == 0:
             raise ValueError("Cannot calculate slope when weight[1] is zero")
 
         # How steep the line is
-        slope = -self.weights[0] / self.weights[1]
+        slope = -self.weights[feature_indices[0]] / self.weights[feature_indices[1]]
 
         # Where the line crosses the y-axis (x=0)
-        intercept = -self.bias / self.weights[1]
+        intercept = -self.bias / self.weights[feature_indices[1]]
 
         return slope, intercept
+
+    def plot_decision_boundary(self, X: NDArray, y: NDArray, feature_indices: tuple[int, int] = (0, 1)):
+        """
+        Plot decision boundary line (2-feature data only)
+
+        Parameters
+        ----------
+        feature_indices: tuple[int, int]
+            Indices of the two features to be used for x and y axes
+        """
+
+        slope, intercept = self.decision_boundary_slope_intercept(feature_indices)
+
+        plt.scatter(X[:, feature_indices[0]], X[:, feature_indices[1]], c=y)
+
+        ax = plt.gca()
+        x_line = ax.get_xbound()
+        y_line = np.array(x_line) * slope + intercept
+
+        plt.plot(x_line, y_line, color="red")
+        plt.xlabel(f"Feature {feature_indices[0] + 1}")
+        plt.ylabel(f"Feature {feature_indices[1] + 1}")
+        plt.title("Decision Boundary")
+        plt.show()
+
+    def __str__(self) -> str:
+        """Return string representation of perceptron"""
+        return f"Weights: {self.weights}, Bias: {self.bias}, Converged: {self.converged}"
 
 
 ####################
@@ -600,29 +628,23 @@ if __name__ == "__main__":
 
     # --------------------------------------------
     # Perceptron
+    print("Training perceptron to classify 'Adelie' vs 'not Adelie'...")
+
+    adelie_index = SPECIES_MAPPING["Adelie"]
+
     perceptron = Perceptron()
-    y_train_binary = convert_y_to_binary(y_train, y_value_true=0)
+    y_train_binary = convert_y_to_binary(y_train, y_value_true=adelie_index)
     perceptron.train(X_train, y_train_binary, learning_rate=0.3, max_epochs=100)
-
     y_pred_perceptron = perceptron.predict(X_test)
-    acc_perceptron = accuracy(y_pred_perceptron, convert_y_to_binary(y_test, y_value_true=0))
 
-    print(f"Weights: {perceptron.weights}, Bias: {perceptron.bias}")
-    print(f"Perceptron converged: {perceptron.converged}")
-    print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
-    print("-" * 75)
+    acc_perceptron = accuracy(y_pred_perceptron, convert_y_to_binary(y_test, y_value_true=adelie_index))  # Adelie = 0
+    print(f"Perceptron accuracy: {acc_perceptron:.4f}")
 
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train_binary)
-    slope, intercept = perceptron.decision_boundary_slope_intercept()
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
+    print(perceptron)
 
-    ax = plt.gca()
-    x_line = ax.get_xbound()
-    y_line = np.array(x_line) * slope + intercept
-    plt.plot(x_line, y_line, color="red")
-    plt.title("Perceptron Training Data")
-    plt.xlabel("Feature 1")
-    plt.ylabel("Feature 2")
-    # plt.show()
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
+    print(perceptron)
 
     # Decision Tree
     # --------------------------------------------
