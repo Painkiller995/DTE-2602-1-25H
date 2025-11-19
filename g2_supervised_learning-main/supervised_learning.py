@@ -134,7 +134,9 @@ def convert_y_to_binary(y: NDArray, y_value_true: int) -> NDArray:
 
 
 def train_test_split(
-    X: NDArray, y: NDArray, train_frac: float
+    X: NDArray,
+    y: NDArray,
+    train_frac: float,
 ) -> tuple[tuple[NDArray, NDArray], tuple[NDArray, NDArray]]:
     """
     Shuffle and split dataset into training and testing datasets
