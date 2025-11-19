@@ -547,11 +547,7 @@ class DecisionTree:
         else:
             raise ValueError("Decision tree root is None (not set)")
 
-    def _predict(
-        self,
-        X: NDArray,
-        node: Union["DecisionTreeBranchNode", "DecisionTreeLeafNode"],
-    ) -> NDArray:
+    def _predict(self, X: NDArray, node: Union["DecisionTreeBranchNode", "DecisionTreeLeafNode"]) -> NDArray:
         """Predict class (y vector) for feature matrix X
 
         Parameters
@@ -610,7 +606,10 @@ if __name__ == "__main__":
 
     y_pred_perceptron = perceptron.predict(X_test)
     acc_perceptron = accuracy(y_pred_perceptron, convert_y_to_binary(y_test, y_value_true=0))
-    print(f"Perceptron accuracy (class 0 vs rest): {acc_perceptron * 100:.2f}%")
+
+    print(f"Weights: {perceptron.weights}, Bias: {perceptron.bias}")
+    print(f"Perceptron converged: {perceptron.converged}")
+    print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
     print("-" * 75)
 
     plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train_binary)
@@ -620,13 +619,13 @@ if __name__ == "__main__":
     x_line = ax.get_xbound()
     y_line = np.array(x_line) * slope + intercept
     plt.plot(x_line, y_line, color="red")
-    plt.title("Perceptron Training Data (Class 0 vs Rest)")
+    plt.title("Perceptron Training Data")
     plt.xlabel("Feature 1")
     plt.ylabel("Feature 2")
-    plt.show()
+    # plt.show()
 
     # Decision Tree
     # --------------------------------------------
-    # decision_tree = DecisionTree()
-    # decision_tree.fit(X_train, y_train)
-    # print(decision_tree)
+    decision_tree = DecisionTree()
+    decision_tree.fit(X_train, y_train)
+    print(decision_tree)
