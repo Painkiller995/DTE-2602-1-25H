@@ -155,18 +155,17 @@ def train_test_split(
         Test dataset
     """
 
-    # Number of samples
     n_samples, _ = X.shape
 
     # Generate shuffled array of indices
     indices = np.arange(n_samples)
     np.random.shuffle(indices)
 
-    # Shuffle data using the shuffled indices
+    # Shuffle X and y
     X_shuffled = X[indices]
     y_shuffled = y[indices]
 
-    #  Find split index
+    # Find split index
     split_index = int(train_frac * n_samples)
 
     X_train = X_shuffled[:split_index]
