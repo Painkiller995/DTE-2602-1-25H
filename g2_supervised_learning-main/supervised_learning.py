@@ -428,7 +428,7 @@ class Perceptron:
             self.converged = False  # Did not converge within max_epochs
 
     def decision_boundary_slope_intercept(self) -> tuple[float, float]:
-        """Calculate slope and intercept for decision boundary line (2-feature data only)
+        """
         Calculate slope and intercept for decision boundary line (2-feature data only)
 
         Returns
@@ -438,8 +438,10 @@ class Perceptron:
         intercept: float
             Intercept of the decision boundary line
         """
+
         if self.weights[1] == 0:
             raise ValueError("Cannot calculate slope when weight[1] is zero")
+
         slope = -self.weights[0] / self.weights[1]
         intercept = -self.bias / self.weights[1]
         return slope, intercept
