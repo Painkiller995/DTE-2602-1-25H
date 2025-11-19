@@ -31,14 +31,15 @@ SPECIES_MAPPING = {
     "Gentoo": 2,
 }
 
-NUMERIC_FEATURES = {
+# feature name : column index in dataset (mapping)
+FEATURES_DATASET_MAPPING = {
     "bill_length_mm": 2,
     "bill_depth_mm": 3,
     "flipper_length_mm": 4,
     "body_mass_g": 5,
 }
 
-NUMERIC_INDICES = list(NUMERIC_FEATURES.values())
+FEATURES_DATASET_INDICES = list(FEATURES_DATASET_MAPPING.values())
 
 
 def read_csv_file(file_name: str, skip_header: bool = True) -> list[list[str]]:
@@ -93,7 +94,7 @@ def read_data() -> tuple[NDArray, NDArray]:
 
     # ----------------------------------------------------------
     # X matrix: extract numeric columns and normalize (z-score)
-    data_numeric = data[:, NUMERIC_INDICES].astype(float)
+    data_numeric = data[:, FEATURES_DATASET_INDICES].astype(float)
     data_mean = np.mean(data_numeric, axis=0)
     data_std = np.std(data_numeric, axis=0)
     X = (data_numeric - data_mean) / data_std
