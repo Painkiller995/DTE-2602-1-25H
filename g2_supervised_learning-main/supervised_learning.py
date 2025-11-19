@@ -590,61 +590,6 @@ class DecisionTree:
 ############
 
 if __name__ == "__main__":
-    perceptron = Perceptron()
-    X = np.array(
-        [
-            [0.1, 0],
-            [0.3, 0.5],
-            [0, 0.2],
-            [0.4, 0.4],
-            [0, 0.3],
-            [0.3, 0],
-            [0.2, 0.4],
-            [0.1, 0.1],
-            [0.3, 0.1],
-            [0.3, 0.4],
-            [0, 0.4],
-            [0.1, 0.3],
-            [0.2, 0.3],
-            [0.5, 0.1],
-            [0.3, 0.2],
-            [0.5, 1],
-            [0.6, 0.9],
-            [0.8, 0.9],
-            [0.6, 0.5],
-            [0.8, 1],
-            [0.9, 0.8],
-            [1, 0.7],
-            [0.5, 0.9],
-            [0.5, 1],
-            [0.75, 0.6],
-            [0.75, 0.8],
-            [0.5, 0.7],
-        ]
-    )
-
-    y = np.array([0] * 15 + [1] * 12)  # First 15 samples are class 0, last 12 samples are class 1
-    perceptron.train(X, y, learning_rate=0.3, max_epochs=10)
-
-    y_pred_perceptron = perceptron.predict(X)
-    acc_perceptron = accuracy(y_pred_perceptron, y)
-    print(f"Perceptron accuracy (class 0 vs rest): {acc_perceptron * 100:.2f}%")
-    print("-" * 75)
-
-    print(f"Weights: {perceptron.weights}, Bias: {perceptron.bias}, Converged: {perceptron.converged}")
-
-    plt.scatter(X[:, 0], X[:, 1], c=y)
-    slope, intercept = perceptron.decision_boundary_slope_intercept()
-    ax = plt.gca()
-    x_line = ax.get_xbound()
-    y_line = np.array(x_line) * slope + intercept
-    plt.plot(x_line, y_line, color="red")
-    plt.title("Perceptron Training Data (Class 0 vs Rest)")
-    plt.xlabel("X1")
-    plt.ylabel("X2")
-    plt.show()
-
-if __name__ == "__maintest__":
     # --------------------------------------------
     # Load and prepare dataset
     X, y = read_data()
