@@ -403,6 +403,8 @@ class Perceptron:
         """
 
         n_samples, n_features = X.shape
+
+        # Initialize weights and bias
         self.weights = np.zeros(n_features)
         self.bias = 0.0
         self.converged = None
@@ -416,11 +418,14 @@ class Perceptron:
                     self.weights += update * xi
                     self.bias += update
                     errors += 1
+
             if errors == 0:
                 self.converged = True
-                break  # stop training early if converged
+                break  # Zero errors, converged
+
+        # Loop ended without break (max_epochs reached)
         else:
-            self.converged = False
+            self.converged = False  # Did not converge within max_epochs
 
     def decision_boundary_slope_intercept(self) -> tuple[float, float]:
         """Calculate slope and intercept for decision boundary line (2-feature data only)
