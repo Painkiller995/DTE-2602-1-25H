@@ -652,8 +652,8 @@ if __name__ == "__main__":
     print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
     print("-" * 75)
 
-    # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
-    # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
 
     # --------------------------------------------
     # Perceptron 2 (Chinstrap vs not Chinstrap)
@@ -671,8 +671,8 @@ if __name__ == "__main__":
     print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
     print("-" * 75)
 
-    # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
-    # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
+    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
 
     # Decision Tree 1: Gentoo vs Others (bill_depth_mm + flipper_length_mm)
     # --------------------------------------------
