@@ -674,8 +674,58 @@ if __name__ == "__main__":
     # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
     # perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
 
-    # Decision Tree
+    # Decision Tree 1: Gentoo vs Others (bill_depth_mm + flipper_length_mm)
     # --------------------------------------------
-    decision_tree = DecisionTree()
-    decision_tree.fit(X_train, y_train)
-    print(decision_tree)
+    gentoo_index = SPECIES_MAPPING["Gentoo"]
+    feature_indices = [1, 2]  # bill_depth_mm, flipper_length_mm
+
+    X_train_sub = X_train[:, feature_indices]
+    y_train_binary = convert_y_to_binary(y_train, gentoo_index)
+
+    X_test_sub = X_test[:, feature_indices]
+    y_test_binary = convert_y_to_binary(y_test, gentoo_index)
+
+    tree_gentoo = DecisionTree()
+    tree_gentoo.fit(X_train_sub, y_train_binary)
+
+    y_pred = tree_gentoo.predict(X_test_sub)
+    acc = accuracy(y_pred, y_test_binary)
+    print(f"Gentoo Decision Tree accuracy: {acc * 100:.2f}%")
+    print(tree_gentoo)
+    print("-" * 75)
+
+    # Decision Tree 2: Chinstrap vs Others (bill_length_mm + bill_depth_mm)
+    # --------------------------------------------
+    chinstrap_index = SPECIES_MAPPING["Chinstrap"]
+    feature_indices = [0, 1]  # bill_length_mm, bill_depth_mm
+
+    X_train_sub = X_train[:, feature_indices]
+    y_train_binary = convert_y_to_binary(y_train, chinstrap_index)
+
+    X_test_sub = X_test[:, feature_indices]
+    y_test_binary = convert_y_to_binary(y_test, chinstrap_index)
+
+    tree_chinstrap = DecisionTree()
+    tree_chinstrap.fit(X_train_sub, y_train_binary)
+
+    y_pred = tree_chinstrap.predict(X_test_sub)
+    acc = accuracy(y_pred, y_test_binary)
+    print(f"Chinstrap Decision Tree accuracy: {acc * 100:.2f}%")
+    print(tree_chinstrap)
+    print("-" * 75)
+
+    # Decision Tree 3:
+    # --------------------------------------------
+    accuracies = []
+    n_experiments = 10
+
+    for _ in range(n_experiments):
+        (X_train_exp, y_train_exp), (X_test_exp, y_test_exp) = train_test_split(X, y, train_frac=0.7)
+        tree = DecisionTree()
+        tree.fit(X_train_exp, y_train_exp)
+        y_pred = tree.predict(X_test_exp)
+        accuracies.append(accuracy(y_pred, y_test_exp))
+
+    print("Decision Tree 3 over multiple experiments:")
+    print(f"Average accuracy over {n_experiments} experiments: {np.mean(accuracies) * 100:.2f}%")
+    print("-" * 75)
