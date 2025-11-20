@@ -641,38 +641,48 @@ if __name__ == "__main__":
     print("Perceptron: Gentoo vs not Gentoo")
 
     gentoo_index = SPECIES_MAPPING["Gentoo"]
+    feature_indices = [1, 2]  # bill_depth_mm, flipper_length_mm
+
+    X_train_sub = X_train[:, feature_indices]
+    y_train_binary = convert_y_to_binary(y_train, gentoo_index)
+
+    X_test_sub = X_test[:, feature_indices]
+    y_test_binary = convert_y_to_binary(y_test, gentoo_index)
 
     perceptron = Perceptron()
-    y_train_binary = convert_y_to_binary(y_train, y_value_true=gentoo_index)
-    perceptron.train(X_train, y_train_binary, learning_rate=0.3, max_epochs=100)
-    y_pred_perceptron = perceptron.predict(X_test)
+    perceptron.train(X_train_sub, y_train_binary, learning_rate=0.3, max_epochs=100)
+    y_pred_perceptron = perceptron.predict(X_test_sub)
     print(perceptron)
 
-    acc_perceptron = accuracy(y_pred_perceptron, convert_y_to_binary(y_test, y_value_true=gentoo_index))  # Gentoo = 2
+    acc_perceptron = accuracy(y_pred_perceptron, y_test_binary)  # Gentoo = 2
     print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
     print("-" * 75)
 
-    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
-    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
+    perceptron.plot_decision_boundary(X_train_sub, y_train_binary)
 
     # --------------------------------------------
     # Perceptron 2 (Chinstrap vs not Chinstrap)
     print("Perceptron: Chinstrap vs not Chinstrap")
 
     chinstrap_index = SPECIES_MAPPING["Chinstrap"]
+    feature_indices = [0, 1]  # bill_length_mm, bill_depth_mm
+
+    X_train_sub = X_train[:, feature_indices]
+    y_train_binary = convert_y_to_binary(y_train, chinstrap_index)
+
+    X_test_sub = X_test[:, feature_indices]
+    y_test_binary = convert_y_to_binary(y_test, chinstrap_index)
 
     perceptron = Perceptron()
-    y_train_binary = convert_y_to_binary(y_train, y_value_true=chinstrap_index)
-    perceptron.train(X_train, y_train_binary, learning_rate=0.3, max_epochs=100)
-    y_pred_perceptron = perceptron.predict(X_test)
+    perceptron.train(X_train_sub, y_train_binary, learning_rate=0.3, max_epochs=100)
+    y_pred_perceptron = perceptron.predict(X_test_sub)
     print(perceptron)
 
-    acc_perceptron = accuracy(y_pred_perceptron, convert_y_to_binary(y_test, y_value_true=chinstrap_index))
+    acc_perceptron = accuracy(y_pred_perceptron, y_test_binary)  # Chinstrap = 1
     print(f"Perceptron accuracy: {acc_perceptron * 100:.2f}%")
     print("-" * 75)
 
-    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 1))
-    perceptron.plot_decision_boundary(X_train, y_train_binary, feature_indices=(0, 2))
+    perceptron.plot_decision_boundary(X_train_sub, y_train_binary)
 
     # Decision Tree 1: Gentoo vs Others (bill_depth_mm + flipper_length_mm)
     # --------------------------------------------
